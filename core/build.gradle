@@ -1,14 +1,139 @@
+buildscript {
+    ext {
+        //Plugin version.
+        androidPluginVersion = '2.2.3'
+        retroLambdaVersion = '3.2.2'
+        androidAptVersion = '1.8'
+        realmVersion = '2.3.1'
+        grgitVersion = '1.5.0'
+
+        //Plugin version.
+        androidSupportVersion = '25.3.1'
+        androidSupportMultidexVersion = '1.0.1'
+
+        daggerVersion = '2.8'
+        androidAnnotationVersion = '4.1.0'
+        generatedAnnotationVersion = '1.0'
+        picassoVersion = '2.5.2'
+        gsonVersion = '2.7'
+        okhttpVersion = '3.3.1'
+        retrofitVersion = '2.1.0'
+        urlconnectionVersion = '2.7.5'
+        rxAndroidVersion = '1.2.0'
+        rxJavaVersion = '1.1.5'
+        eventBusVersion = '3.0.0'
+        jodaVersion = '2.9.3'
+        logentriesVersion = 'logentries-android-4.4.1'
+        hawkVersion = '1.23'
+        mvpVersion = '3.0.2'
+        mvpViewStateVersion = '3.0.2'
+
+        //Configuration.
+        config = [
+                minSdkVersion    : 16,
+                compileSdkVersion: 25,
+                buildToolsVersion: '25.0.2',
+                targetSdkVersion : 25,
+
+        ]
+        //Plugin
+        plugin = [
+                androidPlugin: "com.android.tools.build:gradle:${androidPluginVersion}",
+                retroLambda  : "me.tatarka:gradle-retrolambda:${retroLambdaVersion}",
+                androidApt   : "com.neenbedankt.gradle.plugins:android-apt:${androidAptVersion}",
+                realm        : "io.realm:realm-gradle-plugin:${realmVersion}",
+                grgit        : "org.ajoberstar:grgit:${grgitVersion}"
+        ]
+
+        //Dependencies
+        dependency = [
+
+                //Dagger
+                dagger                       : "com.google.dagger:dagger:${daggerVersion}",
+                daggerCompiler               : "com.google.dagger:dagger-compiler:${daggerVersion}",
+                generatedAnnotation          : "javax.annotation:jsr250-api:${generatedAnnotationVersion}",
+
+                //Android annotation
+                androidAnnotation            : "org.androidannotations:androidannotations-api:${androidAnnotationVersion}",
+                androidAnnotationCompiler    : "org.androidannotations:androidannotations:${androidAnnotationVersion}",
+
+                //REST client
+                gson                         : "com.google.code.gson:gson:${gsonVersion}",
+                okhttp                       : "com.squareup.okhttp3:okhttp:${okhttpVersion}",
+                retrofit                     : "com.squareup.retrofit2:retrofit:${retrofitVersion}",
+                urlconnection                : "com.squareup.okhttp:okhttp-urlconnection:${urlconnectionVersion}",
+                retrofitConverterGson        : "com.squareup.retrofit2:converter-gson:${retrofitVersion}",
+                retrofitAdapterRxjava        : "com.squareup.retrofit2:adapter-rxjava:${retrofitVersion}",
+
+                //EventBus
+                eventBus                     : "org.greenrobot:eventbus:${eventBusVersion}",
+
+                //Async
+                rxAndroid                    : "io.reactivex:rxandroid:${rxAndroidVersion}",
+                rxJava                       : "io.reactivex:rxjava:${rxJavaVersion}",
+
+                //Date times
+                joda                         : "net.danlew:android.joda:${jodaVersion}",
+
+                //Logs
+                logentries                   : "com.github.LogentriesCommunity:le_android:${logentriesVersion}",
+
+                //Pref storage
+                hawk                         : "com.github.orhanobut:hawk:${hawkVersion}",
+
+                //MVP
+                mvp                          : "com.hannesdorfmann.mosby3:mvp:${mvpVersion}",
+                mvpViewState                 : "com.hannesdorfmann.mosby3:viewstate:${mvpViewStateVersion}",
+
+        ]
+    }
+
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+    dependencies {
+        classpath project.ext.plugin.androidPlugin
+        classpath project.ext.plugin.androidApt
+        classpath project.ext.plugin.retroLambda
+        classpath project.ext.plugin.realm
+        classpath project.ext.plugin.grgit
+    }
+}
+
+import org.ajoberstar.grgit.Grgit
+
+ext {
+    git = Grgit.open(currentDir: projectDir)
+    gitVersionName = git.describe()
+    gitVersionCode = git.tag.list().size()
+    gitVersionCodeTime = git.head().time
+}
+
 apply plugin: 'com.android.library'
+apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'android-apt'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'realm-android'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion project.ext.config.compileSdkVersion
+    buildToolsVersion project.ext.config.buildToolsVersion
+    libraryVariants.all { variant ->
+        variant.outputs.each { output ->
+            def fileName = "hicore-" + variant.name + ".aar"
+            output.outputFile = new File(
+                    output.outputFile.parent,
+                    output.outputFile.name.replace(output.outputFile.name, fileName))
+        }
+    }
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion project.ext.config.minSdkVersion
+        targetSdkVersion project.ext.config.compileSdkVersion
+        versionCode gitVersionCode
+        versionName gitVersionName
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -19,6 +144,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+
 }
 
 dependencies {
@@ -26,6 +162,38 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
+
+    def dependency = project.ext.dependency
+
+    //REST client
+    compile dependency.gson
+    compile dependency.okhttp
+    compile dependency.retrofit
+    compile dependency.urlconnection
+    compile dependency.retrofitConverterGson
+    compile dependency.retrofitAdapterRxjava
+
+    //Async
+    compile dependency.rxAndroid
+    compile dependency.rxJava
+
+    //Android annotation
+    apt dependency.androidAnnotationCompiler
+    compile dependency.androidAnnotation
+
+    //Dagger
+    apt dependency.daggerCompiler
+    compile dependency.dagger
+    provided dependency.generatedAnnotation
+
+    //Date times
+    compile dependency.joda
+
+    //Logs
+    compile dependency.logentries
+
+    //Pref storage
+    compile dependency.hawk
+
 }
