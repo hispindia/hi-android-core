@@ -49,41 +49,41 @@ buildscript {
         dependency = [
 
                 //Dagger
-                dagger                       : "com.google.dagger:dagger:${daggerVersion}",
-                daggerCompiler               : "com.google.dagger:dagger-compiler:${daggerVersion}",
-                generatedAnnotation          : "javax.annotation:jsr250-api:${generatedAnnotationVersion}",
+                dagger                   : "com.google.dagger:dagger:${daggerVersion}",
+                daggerCompiler           : "com.google.dagger:dagger-compiler:${daggerVersion}",
+                generatedAnnotation      : "javax.annotation:jsr250-api:${generatedAnnotationVersion}",
 
                 //Android annotation
-                androidAnnotation            : "org.androidannotations:androidannotations-api:${androidAnnotationVersion}",
-                androidAnnotationCompiler    : "org.androidannotations:androidannotations:${androidAnnotationVersion}",
+                androidAnnotation        : "org.androidannotations:androidannotations-api:${androidAnnotationVersion}",
+                androidAnnotationCompiler: "org.androidannotations:androidannotations:${androidAnnotationVersion}",
 
                 //REST client
-                gson                         : "com.google.code.gson:gson:${gsonVersion}",
-                okhttp                       : "com.squareup.okhttp3:okhttp:${okhttpVersion}",
-                retrofit                     : "com.squareup.retrofit2:retrofit:${retrofitVersion}",
-                urlconnection                : "com.squareup.okhttp:okhttp-urlconnection:${urlconnectionVersion}",
-                retrofitConverterGson        : "com.squareup.retrofit2:converter-gson:${retrofitVersion}",
-                retrofitAdapterRxjava        : "com.squareup.retrofit2:adapter-rxjava:${retrofitVersion}",
+                gson                     : "com.google.code.gson:gson:${gsonVersion}",
+                okhttp                   : "com.squareup.okhttp3:okhttp:${okhttpVersion}",
+                retrofit                 : "com.squareup.retrofit2:retrofit:${retrofitVersion}",
+                urlconnection            : "com.squareup.okhttp:okhttp-urlconnection:${urlconnectionVersion}",
+                retrofitConverterGson    : "com.squareup.retrofit2:converter-gson:${retrofitVersion}",
+                retrofitAdapterRxjava    : "com.squareup.retrofit2:adapter-rxjava:${retrofitVersion}",
 
                 //EventBus
-                eventBus                     : "org.greenrobot:eventbus:${eventBusVersion}",
+                eventBus                 : "org.greenrobot:eventbus:${eventBusVersion}",
 
                 //Async
-                rxAndroid                    : "io.reactivex:rxandroid:${rxAndroidVersion}",
-                rxJava                       : "io.reactivex:rxjava:${rxJavaVersion}",
+                rxAndroid                : "io.reactivex:rxandroid:${rxAndroidVersion}",
+                rxJava                   : "io.reactivex:rxjava:${rxJavaVersion}",
 
                 //Date times
-                joda                         : "net.danlew:android.joda:${jodaVersion}",
+                joda                     : "net.danlew:android.joda:${jodaVersion}",
 
                 //Logs
-                logentries                   : "com.github.LogentriesCommunity:le_android:${logentriesVersion}",
+                logentries               : "com.github.LogentriesCommunity:le_android:${logentriesVersion}",
 
                 //Pref storage
-                hawk                         : "com.github.orhanobut:hawk:${hawkVersion}",
+                hawk                     : "com.github.orhanobut:hawk:${hawkVersion}",
 
                 //MVP
-                mvp                          : "com.hannesdorfmann.mosby3:mvp:${mvpVersion}",
-                mvpViewState                 : "com.hannesdorfmann.mosby3:viewstate:${mvpViewStateVersion}",
+                mvp                      : "com.hannesdorfmann.mosby3:mvp:${mvpVersion}",
+                mvpViewState             : "com.hannesdorfmann.mosby3:viewstate:${mvpViewStateVersion}",
 
         ]
     }
@@ -91,7 +91,7 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
+
     }
     dependencies {
         classpath project.ext.plugin.androidPlugin
@@ -116,7 +116,7 @@ apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'android-apt'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'realm-android'
-
+repositories { maven { url 'https://jitpack.io' } }
 android {
     compileSdkVersion project.ext.config.compileSdkVersion
     buildToolsVersion project.ext.config.buildToolsVersion
@@ -177,10 +177,6 @@ dependencies {
     //Async
     compile dependency.rxAndroid
     compile dependency.rxJava
-
-    //Android annotation
-    apt dependency.androidAnnotationCompiler
-    compile dependency.androidAnnotation
 
     //Dagger
     apt dependency.daggerCompiler
