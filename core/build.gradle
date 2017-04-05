@@ -12,8 +12,6 @@ buildscript {
         androidSupportMultidexVersion = '1.0.1'
 
         daggerVersion = '2.8'
-        androidAnnotationVersion = '4.3.0'
-        generatedAnnotationVersion = '1.0'
         picassoVersion = '2.5.2'
         gsonVersion = '2.8.0'
         okhttpVersion = '3.3.1'
