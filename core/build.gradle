@@ -2,7 +2,7 @@ buildscript {
     ext {
         //Plugin version.
         androidPluginVersion = '2.2.3'
-        retroLambdaVersion = '3.2.2'
+        retroLambdaVersion = '3.6.0'
         androidAptVersion = '1.8'
         realmVersion = '2.3.1'
         grgitVersion = '1.5.0'
@@ -12,10 +12,10 @@ buildscript {
         androidSupportMultidexVersion = '1.0.1'
 
         daggerVersion = '2.8'
-        androidAnnotationVersion = '4.1.0'
+        androidAnnotationVersion = '4.3.0'
         generatedAnnotationVersion = '1.0'
         picassoVersion = '2.5.2'
-        gsonVersion = '2.7'
+        gsonVersion = '2.8.0'
         okhttpVersion = '3.3.1'
         retrofitVersion = '2.1.0'
         urlconnectionVersion = '2.7.5'
