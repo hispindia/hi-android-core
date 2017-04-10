@@ -12,7 +12,6 @@ import org.hisp.india.core.common.HttpLoggingInterceptor;
 import org.hisp.india.core.common.JodaDateTimeDeserializer;
 import org.hisp.india.core.exceptions.ApiException;
 import org.hisp.india.core.exceptions.ErrorCodes;
-import org.hisp.india.core.services.RestMessageResponse;
 import org.joda.time.DateTime;
 
 import java.util.HashMap;
@@ -35,6 +34,7 @@ import rx.schedulers.Schedulers;
  */
 
 public class DefaultRxNetworkProvider extends AbstractNetworkProvider implements RxNetworkProvider {
+    private static final String TAG = DefaultRxNetworkProvider.class.getSimpleName();
 
     private boolean isDebug;
     private Map<String, String> headers;
@@ -121,7 +121,7 @@ public class DefaultRxNetworkProvider extends AbstractNetworkProvider implements
     }
 
     @Override
-    public <TResponse extends RestMessageResponse<TResult>, TResult> Observable<TResult> transformResponse(Observable<TResponse> call) {
+    public <TResponse> Observable<TResponse> transformResponse(Observable<TResponse> call) {
 
         return call
                 .observeOn(Schedulers.computation())
@@ -147,6 +147,6 @@ public class DefaultRxNetworkProvider extends AbstractNetworkProvider implements
                         return Observable.error(throwable);
                     }
                 })
-                .flatMap(tResponse -> Observable.just(tResponse.getData()));
+                .flatMap(Observable::just);
     }
 }

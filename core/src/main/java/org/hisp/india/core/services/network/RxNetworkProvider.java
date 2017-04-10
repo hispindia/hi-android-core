@@ -2,8 +2,6 @@ package org.hisp.india.core.services.network;
 
 import com.google.gson.GsonBuilder;
 
-import org.hisp.india.core.services.RestMessageResponse;
-
 import rx.Observable;
 
 /**
@@ -22,5 +20,5 @@ public interface RxNetworkProvider extends NetworkProvider {
 
     <T> T provideApi(String baseUrl, final Class<T> service);
 
-    <TResponse extends RestMessageResponse<TResult>, TResult> Observable<TResult> transformResponse(Observable<TResponse> call);
+    <TResponse> Observable<TResponse> transformResponse(Observable<TResponse> call);
 }
