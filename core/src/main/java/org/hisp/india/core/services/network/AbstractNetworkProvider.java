@@ -21,8 +21,13 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
     protected abstract Gson gson();
 
     @Override
+    public Context getContext() {
+        return context;
+    }
+
+    @Override
     public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }

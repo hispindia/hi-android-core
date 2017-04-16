@@ -22,8 +22,10 @@ public class ApiException extends Exception {
 
     @Override
     public String getMessage() {
-        return String.format("Error Code: %s\nMESSAGE: %s\n", code, message);
+        return String.format("Error Code: %s\nMessage: %s\n", code, message);
     }
 
-
+    public int getCode() {
+        return code;
+    }
 }

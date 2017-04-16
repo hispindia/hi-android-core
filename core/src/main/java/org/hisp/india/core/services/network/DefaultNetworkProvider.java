@@ -10,8 +10,8 @@ import com.google.gson.reflect.TypeToken;
 
 import org.hisp.india.core.common.HttpLoggingInterceptor;
 import org.hisp.india.core.common.JodaDateTimeDeserializer;
-import org.hisp.india.core.exceptions.ApiException;
-import org.hisp.india.core.exceptions.ErrorCodes;
+import org.hisp.india.core.services.filter.ApiExceptionFilter;
+import org.hisp.india.core.services.filter.NetworkFilter;
 import org.joda.time.DateTime;
 
 import java.util.HashMap;
@@ -21,9 +21,7 @@ import java.util.concurrent.TimeUnit;
 import io.realm.RealmObject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.HttpException;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
@@ -33,13 +31,13 @@ import rx.schedulers.Schedulers;
  * Created by nhancao on 5/5/17.
  */
 
-public class DefaultRxNetworkProvider extends AbstractNetworkProvider implements RxNetworkProvider {
-    private static final String TAG = DefaultRxNetworkProvider.class.getSimpleName();
+public class DefaultNetworkProvider extends AbstractNetworkProvider implements NetworkProvider {
+    private static final String TAG = DefaultNetworkProvider.class.getSimpleName();
 
     private boolean isDebug;
     private Map<String, String> headers;
 
-    public DefaultRxNetworkProvider(Context context, boolean isDebug) {
+    public DefaultNetworkProvider(Context context, boolean isDebug) {
         super(context);
         this.isDebug = isDebug;
         this.headers = new HashMap<>();
@@ -76,13 +74,13 @@ public class DefaultRxNetworkProvider extends AbstractNetworkProvider implements
     }
 
     @Override
-    public RxNetworkProvider addDefaultHeader() {
+    public NetworkProvider addDefaultHeader() {
         addHeader("Content-Type", "application/json");
         return this;
     }
 
     @Override
-    public RxNetworkProvider addHeader(String key, String value) {
+    public NetworkProvider addHeader(String key, String value) {
         headers.put(key, value);
         return this;
     }
@@ -125,28 +123,8 @@ public class DefaultRxNetworkProvider extends AbstractNetworkProvider implements
 
         return call
                 .observeOn(Schedulers.computation())
-                .onErrorResumeNext(throwable -> {
-                    if (!DefaultRxNetworkProvider.this.isNetworkAvailable()) {
-                        return Observable.error(ApiException.put(ErrorCodes.NETWORK_NOT_AVAILABLE_ERROR, "Network is not available"));
-                    }
-
-                    if (throwable instanceof HttpException) {
-                        ResponseBody failedResponse = ((HttpException) throwable).response().errorBody();
-                        if (failedResponse == null) {
-                            return Observable.error(ApiException.put(ErrorCodes.GENERAL_ERROR, "Response Error Body is empty"));
-                        } else {
-                            String rawString = "";
-                            try {
-                                rawString = failedResponse.string();
-                                return Observable.error(ApiException.put(ErrorCodes.GENERAL_ERROR, rawString));
-                            } catch (Exception ex) {
-                                return Observable.error(ApiException.put(ErrorCodes.GENERAL_ERROR, ex.getMessage()));
-                            }
-                        }
-                    } else {
-                        return Observable.error(throwable);
-                    }
-                })
+                .onErrorResumeNext(throwable -> new NetworkFilter<TResponse>(this).execute(throwable))
+                .onErrorResumeNext(throwable -> new ApiExceptionFilter<TResponse>().execute(throwable))
                 .flatMap(Observable::just);
     }
 }
