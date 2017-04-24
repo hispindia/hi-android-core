@@ -25,6 +25,7 @@ buildscript {
         hawkVersion = '1.23'
         mvpVersion = '3.0.2'
         mvpViewStateVersion = '3.0.2'
+        ciceroneVersion = '1.2.1'
 
         //Configuration.
         config = [
@@ -82,6 +83,8 @@ buildscript {
                 //MVP
                 mvp                      : "com.hannesdorfmann.mosby3:mvp:${mvpVersion}",
                 mvpViewState             : "com.hannesdorfmann.mosby3:viewstate:${mvpViewStateVersion}",
+                //Cicerone
+                cicerone    : "ru.terrakok.cicerone:cicerone:${ciceroneVersion}"
 
         ]
     }
@@ -189,5 +192,8 @@ dependencies {
 
     //Pref storage
     compile dependency.hawk
+
+    //Cicerone
+    compile dependency.cicerone
 
 }
