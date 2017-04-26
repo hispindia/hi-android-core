@@ -3,27 +3,29 @@ package org.hisp.india.core.services.filter;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable;
+
 /**
  * Created by nhancao on 4/16/17.
  */
 
-public class FilterChain<Input, Output> {
+public class FilterChain {
 
-    private List<Filter<Input, Output>> filters = new ArrayList<>();
-    private Filter<Input, Output> target;
+    private List<InterceptFilter> filters = new ArrayList<>();
 
-    public void execute(Input source) {
-        for (Filter<Input, Output> filter : filters) {
-            filter.execute(source);
+    public <T> Observable<T> execute(Observable<T> target) {
+        Observable<T> res = target;
+        for (InterceptFilter filter : filters) {
+            res = target.compose(filter.execute());
         }
-        target.execute(source);
+        return res;
     }
 
-    public void addFilter(Filter<Input, Output> filter) {
+    public void addFilter(InterceptFilter filter) {
         filters.add(filter);
     }
 
-    public void setTarget(Filter<Input, Output> target) {
-        this.target = target;
+    public void clearFilter(){
+        filters.clear();
     }
 }

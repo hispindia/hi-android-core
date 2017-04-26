@@ -11,6 +11,8 @@ import com.google.gson.reflect.TypeToken;
 import org.hisp.india.core.common.HttpLoggingInterceptor;
 import org.hisp.india.core.common.JodaDateTimeDeserializer;
 import org.hisp.india.core.services.filter.ApiExceptionFilter;
+import org.hisp.india.core.services.filter.FilterChain;
+import org.hisp.india.core.services.filter.InterceptFilter;
 import org.hisp.india.core.services.filter.NetworkFilter;
 import org.joda.time.DateTime;
 
@@ -36,6 +38,8 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
 
     private boolean isDebug;
     private Map<String, String> headers;
+    private FilterChain filterChain;
+    private boolean enableFilter;
 
     public DefaultNetworkProvider(Context context, boolean isDebug) {
         super(context);
@@ -86,6 +90,24 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
     }
 
     @Override
+    public NetworkProvider addFilter(InterceptFilter interceptFilter) {
+        filterChain.addFilter(interceptFilter);
+        return this;
+    }
+
+    @Override
+    public NetworkProvider clearFilter() {
+        filterChain.clearFilter();
+        return this;
+    }
+
+    @Override
+    public NetworkProvider enableFilter(boolean enableFilter) {
+        this.enableFilter = enableFilter;
+        return this;
+    }
+
+    @Override
     public <T> T provideApi(String baseUrl, Class<T> service) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.connectTimeout(30, TimeUnit.SECONDS);
@@ -121,10 +143,16 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
     @Override
     public <TResponse> Observable<TResponse> transformResponse(Observable<TResponse> call) {
 
-        return call
+        Observable<TResponse> res = call
                 .observeOn(Schedulers.computation())
                 .onErrorResumeNext(throwable -> new NetworkFilter<TResponse>(this).execute(throwable))
                 .onErrorResumeNext(throwable -> new ApiExceptionFilter<TResponse>().execute(throwable))
                 .flatMap(Observable::just);
+
+        if (enableFilter) {
+            res = filterChain.execute(res);
+        }
+        return res.onExceptionResumeNext(Observable.empty());
+
     }
 }

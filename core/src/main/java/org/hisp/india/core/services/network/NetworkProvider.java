@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.google.gson.GsonBuilder;
 
+import org.hisp.india.core.services.filter.InterceptFilter;
+
 import rx.Observable;
 
 /**
@@ -23,6 +25,12 @@ public interface NetworkProvider {
     NetworkProvider addDefaultHeader();
 
     NetworkProvider addHeader(String key, String value);
+
+    NetworkProvider addFilter(InterceptFilter interceptFilter);
+
+    NetworkProvider clearFilter();
+
+    NetworkProvider enableFilter(boolean enableFilter);
 
     <T> T provideApi(String baseUrl, final Class<T> service);
 
