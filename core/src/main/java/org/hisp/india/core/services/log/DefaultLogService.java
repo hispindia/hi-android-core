@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.logentries.logger.AndroidLogger;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -22,6 +23,14 @@ public class DefaultLogService implements LogService {
                      int dataHubPort,
                      String token,
                      boolean logHostName) throws IOException {
+        File logFile = new File(context.getFilesDir(), "LogentriesLogStorage.log");
+        if (!logFile.exists()) {
+            try {
+                logFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         this.logger = AndroidLogger.createInstance(
                 context,
                 useHttpPost,
