@@ -45,6 +45,7 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
         super(context);
         this.isDebug = isDebug;
         this.headers = new HashMap<>();
+        this.filterChain = new FilterChain();
     }
 
     @Override
