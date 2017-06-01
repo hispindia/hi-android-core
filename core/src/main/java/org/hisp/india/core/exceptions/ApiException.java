@@ -4,7 +4,7 @@ package org.hisp.india.core.exceptions;
  * Created by nhancao on 4/5/17.
  */
 
-public class ApiException extends Exception {
+public class ApiException extends Throwable {
 
     private int code;
     private String message;
