@@ -32,6 +32,8 @@ public interface NetworkProvider {
 
     NetworkProvider enableFilter(boolean enableFilter);
 
+    NetworkProvider enableProgress(boolean enableProgress);
+
     <T> T provideApi(String baseUrl, final Class<T> service);
 
     <TResponse> Observable<TResponse> transformResponse(Observable<TResponse> call);

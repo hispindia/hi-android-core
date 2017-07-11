@@ -8,7 +8,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import org.hisp.india.core.common.HttpLoggingInterceptor;
+import org.greenrobot.eventbus.EventBus;
+import org.hisp.india.core.bus.ProgressBus;
 import org.hisp.india.core.common.JodaDateTimeDeserializer;
 import org.hisp.india.core.services.filter.ApiExceptionFilter;
 import org.hisp.india.core.services.filter.FilterChain;
@@ -23,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 import io.realm.RealmObject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -35,11 +38,13 @@ import rx.schedulers.Schedulers;
 
 public class DefaultNetworkProvider extends AbstractNetworkProvider implements NetworkProvider {
     private static final String TAG = DefaultNetworkProvider.class.getSimpleName();
+    public static EventBus PROGRESS_BUS = new EventBus();
 
     private boolean isDebug;
     private Map<String, String> headers;
     private FilterChain filterChain;
     private boolean enableFilter;
+    private ProgressListener progressListener;
 
     public DefaultNetworkProvider(Context context, boolean isDebug) {
         super(context);
@@ -109,11 +114,26 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
     }
 
     @Override
+    public NetworkProvider enableProgress(boolean enableProgress) {
+        if (enableProgress) {
+            this.progressListener = (bytesRead, contentLength, done) -> {
+                PROGRESS_BUS.post(new ProgressBus(bytesRead, contentLength, done));
+            };
+        } else {
+            this.progressListener = null;
+        }
+        return this;
+    }
+
+    @Override
     public <T> T provideApi(String baseUrl, Class<T> service) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(30, TimeUnit.SECONDS);
-        builder.readTimeout(30, TimeUnit.SECONDS);
-        builder.writeTimeout(30, TimeUnit.SECONDS);
+        //Set timeout
+        builder.connectTimeout(60, TimeUnit.SECONDS);
+        builder.readTimeout(60, TimeUnit.SECONDS);
+        builder.writeTimeout(60, TimeUnit.SECONDS);
+
+        //Set interceptor
         builder.addInterceptor(chain -> {
             Request.Builder requestBuilder = chain.request().newBuilder();
             if (headers == null || headers.size() == 0) {
@@ -125,11 +145,24 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
             return chain.proceed(requestBuilder.build());
         });
 
+        //Enable log
         if (isDebug()) {
             HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
             interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             builder.addInterceptor(interceptor);
         }
+
+        //Update progress
+        if (progressListener != null) {
+            builder.addNetworkInterceptor(chain -> {
+                Response originalResponse = chain.proceed(chain.request());
+                return originalResponse.newBuilder()
+                                       .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+                                       .build();
+
+            });
+        }
+
         OkHttpClient okHttpClient = builder.build();
 
         Retrofit restAdapter = new Retrofit.Builder()
@@ -138,6 +171,7 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(okHttpClient)
                 .build();
+
         return restAdapter.create(service);
     }
 

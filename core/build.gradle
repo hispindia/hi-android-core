@@ -14,9 +14,9 @@ buildscript {
         daggerVersion = '2.8'
         picassoVersion = '2.5.2'
         gsonVersion = '2.8.0'
-        okhttpVersion = '3.3.1'
+        okhttpVersion = '3.8.1'
+        okhttpLogVersion = '3.8.0'
         retrofitVersion = '2.1.0'
-        urlconnectionVersion = '2.7.5'
         rxAndroidVersion = '1.2.0'
         rxJavaVersion = '1.1.5'
         eventBusVersion = '3.0.0'
@@ -60,9 +60,9 @@ buildscript {
                 gson                     : "com.google.code.gson:gson:${gsonVersion}",
                 okhttp                   : "com.squareup.okhttp3:okhttp:${okhttpVersion}",
                 retrofit                 : "com.squareup.retrofit2:retrofit:${retrofitVersion}",
-                urlconnection            : "com.squareup.okhttp:okhttp-urlconnection:${urlconnectionVersion}",
                 retrofitConverterGson    : "com.squareup.retrofit2:converter-gson:${retrofitVersion}",
                 retrofitAdapterRxjava    : "com.squareup.retrofit2:adapter-rxjava:${retrofitVersion}",
+                okhttpLog                : "com.squareup.okhttp3:logging-interceptor:${okhttpLogVersion}",
 
                 //EventBus
                 eventBus                 : "org.greenrobot:eventbus:${eventBusVersion}",
@@ -84,7 +84,7 @@ buildscript {
                 mvp                      : "com.hannesdorfmann.mosby3:mvp:${mvpVersion}",
                 mvpViewState             : "com.hannesdorfmann.mosby3:viewstate:${mvpViewStateVersion}",
                 //Cicerone
-                cicerone    : "ru.terrakok.cicerone:cicerone:${ciceroneVersion}"
+                cicerone                 : "ru.terrakok.cicerone:cicerone:${ciceroneVersion}"
 
         ]
     }
@@ -170,14 +170,17 @@ dependencies {
     //REST client
     compile dependency.gson
     compile dependency.okhttp
+    compile dependency.okhttpLog
     compile dependency.retrofit
-    compile dependency.urlconnection
     compile dependency.retrofitConverterGson
     compile dependency.retrofitAdapterRxjava
 
     //Async
     compile dependency.rxAndroid
     compile dependency.rxJava
+
+    //Messages aka EventBus
+    compile dependency.eventBus
 
     //Dagger
     apt dependency.daggerCompiler
