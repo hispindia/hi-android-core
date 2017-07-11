@@ -129,9 +129,9 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
     public <T> T provideApi(String baseUrl, Class<T> service) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         //Set timeout
-        builder.connectTimeout(60, TimeUnit.SECONDS);
-        builder.readTimeout(60, TimeUnit.SECONDS);
-        builder.writeTimeout(60, TimeUnit.SECONDS);
+        builder.connectTimeout(120, TimeUnit.SECONDS);
+        builder.readTimeout(120, TimeUnit.SECONDS);
+        builder.writeTimeout(120, TimeUnit.SECONDS);
 
         //Set interceptor
         builder.addInterceptor(chain -> {
