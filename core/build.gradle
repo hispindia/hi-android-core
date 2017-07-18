@@ -4,7 +4,7 @@ buildscript {
         androidPluginVersion = '2.2.3'
         retroLambdaVersion = '3.6.0'
         androidAptVersion = '1.8'
-        realmVersion = '3.1.2'
+        realmVersion = '3.5.0'
         grgitVersion = '1.5.0'
 
         //Plugin version.
