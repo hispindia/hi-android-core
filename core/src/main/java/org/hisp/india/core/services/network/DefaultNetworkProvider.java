@@ -25,7 +25,6 @@ import io.realm.RealmObject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -128,10 +127,12 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
     @Override
     public <T> T provideApi(String baseUrl, Class<T> service) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
         //Set timeout
-        builder.connectTimeout(120, TimeUnit.SECONDS);
-        builder.readTimeout(120, TimeUnit.SECONDS);
-        builder.writeTimeout(120, TimeUnit.SECONDS);
+        int timeOut = getTimeout();
+        builder.connectTimeout(timeOut, TimeUnit.SECONDS);
+        builder.readTimeout(timeOut, TimeUnit.SECONDS);
+        builder.writeTimeout(timeOut, TimeUnit.SECONDS);
 
         //Set interceptor
         builder.addInterceptor(chain -> {
@@ -148,7 +149,7 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
         //Enable log
         if (isDebug()) {
             HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            interceptor.setLevel(getLevel());
             builder.addInterceptor(interceptor);
         }
 

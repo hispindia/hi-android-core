@@ -1,108 +1,16 @@
 buildscript {
-    ext {
-        //Plugin version.
-        androidPluginVersion = '2.2.3'
-        retroLambdaVersion = '3.6.0'
-        androidAptVersion = '1.8'
-        realmVersion = '3.5.0'
-        grgitVersion = '1.5.0'
-
-        //Plugin version.
-        androidSupportVersion = '25.3.1'
-        androidSupportMultidexVersion = '1.0.1'
-
-        daggerVersion = '2.8'
-        picassoVersion = '2.5.2'
-        gsonVersion = '2.8.0'
-        okhttpVersion = '3.8.1'
-        okhttpLogVersion = '3.8.0'
-        retrofitVersion = '2.1.0'
-        rxAndroidVersion = '1.2.0'
-        rxJavaVersion = '1.1.5'
-        eventBusVersion = '3.0.0'
-        jodaVersion = '2.9.3'
-        logentriesVersion = 'logentries-android-4.4.1'
-        hawkVersion = '1.23'
-        mvpVersion = '3.0.2'
-        mvpViewStateVersion = '3.0.2'
-        ciceroneVersion = '1.2.1'
-
-        //Configuration.
-        config = [
-                minSdkVersion    : 16,
-                compileSdkVersion: 25,
-                buildToolsVersion: '25.0.2',
-                targetSdkVersion : 25,
-
-        ]
-        //Plugin
-        plugin = [
-                androidPlugin: "com.android.tools.build:gradle:${androidPluginVersion}",
-                retroLambda  : "me.tatarka:gradle-retrolambda:${retroLambdaVersion}",
-                androidApt   : "com.neenbedankt.gradle.plugins:android-apt:${androidAptVersion}",
-                realm        : "io.realm:realm-gradle-plugin:${realmVersion}",
-                grgit        : "org.ajoberstar:grgit:${grgitVersion}"
-        ]
-
-        //Dependencies
-        dependency = [
-
-                //Dagger
-                dagger                   : "com.google.dagger:dagger:${daggerVersion}",
-                daggerCompiler           : "com.google.dagger:dagger-compiler:${daggerVersion}",
-                generatedAnnotation      : "javax.annotation:jsr250-api:${generatedAnnotationVersion}",
-
-                //Android annotation
-                androidAnnotation        : "org.androidannotations:androidannotations-api:${androidAnnotationVersion}",
-                androidAnnotationCompiler: "org.androidannotations:androidannotations:${androidAnnotationVersion}",
-
-                //REST client
-                gson                     : "com.google.code.gson:gson:${gsonVersion}",
-                okhttp                   : "com.squareup.okhttp3:okhttp:${okhttpVersion}",
-                retrofit                 : "com.squareup.retrofit2:retrofit:${retrofitVersion}",
-                retrofitConverterGson    : "com.squareup.retrofit2:converter-gson:${retrofitVersion}",
-                retrofitAdapterRxjava    : "com.squareup.retrofit2:adapter-rxjava:${retrofitVersion}",
-                okhttpLog                : "com.squareup.okhttp3:logging-interceptor:${okhttpLogVersion}",
-
-                //EventBus
-                eventBus                 : "org.greenrobot:eventbus:${eventBusVersion}",
-
-                //Async
-                rxAndroid                : "io.reactivex:rxandroid:${rxAndroidVersion}",
-                rxJava                   : "io.reactivex:rxjava:${rxJavaVersion}",
-
-                //Date times
-                joda                     : "net.danlew:android.joda:${jodaVersion}",
-
-                //Logs
-                logentries               : "com.github.LogentriesCommunity:le_android:${logentriesVersion}",
-
-                //Pref storage
-                hawk                     : "com.github.orhanobut:hawk:${hawkVersion}",
-
-                //MVP
-                mvp                      : "com.hannesdorfmann.mosby3:mvp:${mvpVersion}",
-                mvpViewState             : "com.hannesdorfmann.mosby3:viewstate:${mvpViewStateVersion}",
-                //Cicerone
-                cicerone                 : "ru.terrakok.cicerone:cicerone:${ciceroneVersion}"
-
-        ]
-    }
-
     repositories {
         jcenter()
         mavenCentral()
-
     }
     dependencies {
-        classpath project.ext.plugin.androidPlugin
-        classpath project.ext.plugin.androidApt
-        classpath project.ext.plugin.retroLambda
-        classpath project.ext.plugin.realm
-        classpath project.ext.plugin.grgit
+        classpath "com.android.tools.build:gradle:${rootProject.ext.hiCoreVersion.buildGradle}"
+        classpath "com.neenbedankt.gradle.plugins:android-apt:${rootProject.ext.hiCoreVersion.androidApt}"
+        classpath "me.tatarka:gradle-retrolambda:${rootProject.ext.hiCoreVersion.retrolambda}"
+        classpath "io.realm:realm-gradle-plugin:${rootProject.ext.hiCoreVersion.realm}"
+        classpath "org.ajoberstar:grgit:${rootProject.ext.hiCoreVersion.grgit}"
     }
 }
-
 import org.ajoberstar.grgit.Grgit
 
 ext {
@@ -118,9 +26,10 @@ apply plugin: 'android-apt'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'realm-android'
 repositories { maven { url 'https://jitpack.io' } }
+
 android {
-    compileSdkVersion project.ext.config.compileSdkVersion
-    buildToolsVersion project.ext.config.buildToolsVersion
+    compileSdkVersion rootProject.ext.hiCoreVersion.compileSdkVersion
+    buildToolsVersion rootProject.ext.hiCoreVersion.buildToolsVersion
     libraryVariants.all { variant ->
         variant.outputs.each { output ->
             def fileName = "hicore-" + variant.name + ".aar"
@@ -131,14 +40,12 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion project.ext.config.minSdkVersion
-        targetSdkVersion project.ext.config.compileSdkVersion
+        minSdkVersion rootProject.ext.hiCoreVersion.minSdkVersion
+        targetSdkVersion rootProject.ext.hiCoreVersion.targetSdkVersion
         versionCode gitVersionCode
         versionName gitVersionName
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -160,43 +67,36 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    testCompile 'junit:junit:4.12'
 
-    def dependency = project.ext.dependency
-
-    //REST client
-    compile dependency.gson
-    compile dependency.okhttp
-    compile dependency.okhttpLog
-    compile dependency.retrofit
-    compile dependency.retrofitConverterGson
-    compile dependency.retrofitAdapterRxjava
+    //Rest client
+    compile "com.google.code.gson:gson:${rootProject.ext.hiCoreVersion.gson}"
+    compile "com.squareup.okhttp3:okhttp:${rootProject.ext.hiCoreVersion.okhttp}"
+    compile "com.squareup.retrofit2:retrofit:${rootProject.ext.hiCoreVersion.retrofit}"
+    compile "com.squareup.retrofit2:converter-gson:${rootProject.ext.hiCoreVersion.retrofitConverterGson}"
+    compile "com.squareup.retrofit2:adapter-rxjava:${rootProject.ext.hiCoreVersion.retrofitAdapterRxjava}"
 
     //Async
-    compile dependency.rxAndroid
-    compile dependency.rxJava
-
-    //Messages aka EventBus
-    compile dependency.eventBus
+    compile "io.reactivex:rxandroid:${rootProject.ext.hiCoreVersion.rxAndroid}"
+    compile "io.reactivex:rxjava:${rootProject.ext.hiCoreVersion.rxJava}"
 
     //Dagger
-    apt dependency.daggerCompiler
-    compile dependency.dagger
-    provided dependency.generatedAnnotation
+    apt "com.google.dagger:dagger-compiler:${rootProject.ext.hiCoreVersion.daggerCompiler}"
+    compile "com.google.dagger:dagger:${rootProject.ext.hiCoreVersion.dagger}"
+    provided "javax.annotation:jsr250-api:${rootProject.ext.hiCoreVersion.jsr250Api}"
 
     //Date times
-    compile dependency.joda
+    compile "net.danlew:android.joda:${rootProject.ext.hiCoreVersion.joda}"
 
     //Logs
-    compile dependency.logentries
+    compile "com.github.LogentriesCommunity:le_android:${rootProject.ext.hiCoreVersion.logentries}"
 
     //Pref storage
-    compile dependency.hawk
+    compile "com.github.orhanobut:hawk:${rootProject.ext.hiCoreVersion.hawk}"
 
     //Cicerone
-    compile dependency.cicerone
+    compile "ru.terrakok.cicerone:cicerone:${rootProject.ext.hiCoreVersion.cicerone}"
+
+    //Messages
+    compile "org.greenrobot:eventbus:${rootProject.ext.hiCoreVersion.eventbus}"
 
 }

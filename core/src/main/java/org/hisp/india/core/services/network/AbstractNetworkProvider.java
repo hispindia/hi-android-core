@@ -26,6 +26,16 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
     }
 
     @Override
+    public int getTimeout() {
+        return 120;
+    }
+
+    @Override
+    public HttpLoggingInterceptor.Level getLevel() {
+        return HttpLoggingInterceptor.Level.BASIC;
+    }
+
+    @Override
     public boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

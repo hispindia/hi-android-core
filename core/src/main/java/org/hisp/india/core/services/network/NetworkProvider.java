@@ -34,6 +34,10 @@ public interface NetworkProvider {
 
     NetworkProvider enableProgress(boolean enableProgress);
 
+    HttpLoggingInterceptor.Level getLevel();
+
+    int getTimeout();
+
     <T> T provideApi(String baseUrl, final Class<T> service);
 
     <TResponse> Observable<TResponse> transformResponse(Observable<TResponse> call);
