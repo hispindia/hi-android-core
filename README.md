@@ -13,12 +13,11 @@ Config version at top gradle file
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext {
-		// Config version for core
+        // Config version for core
         hiCoreVersion = [
                 buildGradle          : "2.3.3",
                 androidApt           : "1.8",
                 retrolambda          : "3.6.0",
-                realm                : "3.5.0",
                 grgit                : "1.5.0",
                 compileSdkVersion    : 26,
                 buildToolsVersion    : "26.0.1",
@@ -40,7 +39,7 @@ buildscript {
                 logentries           : "logentries-android-4.4.1",
                 eventbus             : "3.0.0"
         ]
-         
+        
     }
  
     repositories {
