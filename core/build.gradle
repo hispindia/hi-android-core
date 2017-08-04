@@ -1,13 +1,71 @@
 buildscript {
+    ext {
+        // Config version for core
+        hiCoreVersion = [
+                buildGradle          : "2.3.3",
+                androidApt           : "1.8",
+                retrolambda          : "3.6.0",
+                grgit                : "1.5.0",
+                compileSdkVersion    : 26,
+                buildToolsVersion    : "26.0.1",
+                minSdkVersion        : 16,
+                targetSdkVersion     : 26,
+                gson                 : "2.8.0",
+                okhttp               : "3.8.1",
+                retrofit             : "2.1.0",
+                retrofitConverterGson: "2.1.0",
+                retrofitAdapterRxjava: "2.1.0",
+                rxAndroid            : "1.2.0",
+                rxJava               : "1.1.5",
+                dagger               : "2.0",
+                daggerCompiler       : "2.0",
+                jsr250Api            : "1.0",
+                joda                 : "2.9.3",
+                hawk                 : "1.23",
+                cicerone             : "1.2.1",
+                logentries           : "logentries-android-4.4.1",
+                eventbus             : "3.0.0"
+        ]
+        def props = rootProject.getExtensions().findByName("ext");
+        if (props != null) {
+            props = props.properties;
+            if (props.containsKey("hiCoreVersion")) {
+                props = props.getAt("hiCoreVersion")
+                if (props.getAt("buildGradle") != null) hiCoreVersion.buildGradle = props.getAt("buildGradle")
+                if (props.getAt("androidApt") != null) hiCoreVersion.androidApt = props.getAt("androidApt")
+                if (props.getAt("retrolambda") != null) hiCoreVersion.retrolambda = props.getAt("retrolambda")
+                if (props.getAt("grgit") != null) hiCoreVersion.grgit = props.getAt("grgit")
+                if (props.getAt("compileSdkVersion") != null) hiCoreVersion.compileSdkVersion = props.getAt("compileSdkVersion")
+                if (props.getAt("buildToolsVersion") != null) hiCoreVersion.buildToolsVersion = props.getAt("buildToolsVersion")
+                if (props.getAt("minSdkVersion") != null) hiCoreVersion.minSdkVersion = props.getAt("minSdkVersion")
+                if (props.getAt("targetSdkVersion") != null) hiCoreVersion.targetSdkVersion = props.getAt("targetSdkVersion")
+                if (props.getAt("gson") != null) hiCoreVersion.gson = props.getAt("gson")
+                if (props.getAt("okhttp") != null) hiCoreVersion.okhttp = props.getAt("okhttp")
+                if (props.getAt("retrofit") != null) hiCoreVersion.retrofit = props.getAt("retrofit")
+                if (props.getAt("retrofitConverterGson") != null) hiCoreVersion.retrofitConverterGson = props.getAt("retrofitConverterGson")
+                if (props.getAt("retrofitAdapterRxjava") != null) hiCoreVersion.retrofitAdapterRxjava = props.getAt("retrofitAdapterRxjava")
+                if (props.getAt("rxAndroid") != null) hiCoreVersion.rxAndroid = props.getAt("rxAndroid")
+                if (props.getAt("rxJava") != null) hiCoreVersion.rxJava = props.getAt("rxJava")
+                if (props.getAt("dagger") != null) hiCoreVersion.dagger = props.getAt("dagger")
+                if (props.getAt("daggerCompiler") != null) hiCoreVersion.daggerCompiler = props.getAt("daggerCompiler")
+                if (props.getAt("jsr250Api") != null) hiCoreVersion.jsr250Api = props.getAt("jsr250Api")
+                if (props.getAt("joda") != null) hiCoreVersion.joda = props.getAt("joda")
+                if (props.getAt("hawk") != null) hiCoreVersion.hawk = props.getAt("hawk")
+                if (props.getAt("cicerone") != null) hiCoreVersion.cicerone = props.getAt("cicerone")
+                if (props.getAt("logentries") != null) hiCoreVersion.logentries = props.getAt("logentries")
+                if (props.getAt("eventbus") != null) hiCoreVersion.eventbus = props.getAt("eventbus")
+            }
+        }
+    }
     repositories {
         jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:${rootProject.ext.hiCoreVersion.buildGradle}"
-        classpath "com.neenbedankt.gradle.plugins:android-apt:${rootProject.ext.hiCoreVersion.androidApt}"
-        classpath "me.tatarka:gradle-retrolambda:${rootProject.ext.hiCoreVersion.retrolambda}"
-        classpath "org.ajoberstar:grgit:${rootProject.ext.hiCoreVersion.grgit}"
+        classpath "com.android.tools.build:gradle:${hiCoreVersion.buildGradle}"
+        classpath "com.neenbedankt.gradle.plugins:android-apt:${hiCoreVersion.androidApt}"
+        classpath "me.tatarka:gradle-retrolambda:${hiCoreVersion.retrolambda}"
+        classpath "org.ajoberstar:grgit:${hiCoreVersion.grgit}"
     }
 }
 import org.ajoberstar.grgit.Grgit
@@ -24,8 +82,8 @@ apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'android-apt'
 
 android {
-    compileSdkVersion rootProject.ext.hiCoreVersion.compileSdkVersion
-    buildToolsVersion rootProject.ext.hiCoreVersion.buildToolsVersion
+    compileSdkVersion hiCoreVersion.compileSdkVersion
+    buildToolsVersion hiCoreVersion.buildToolsVersion
     libraryVariants.all { variant ->
         variant.outputs.each { output ->
             def fileName = "hicore-" + variant.name + ".aar"
@@ -36,8 +94,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion rootProject.ext.hiCoreVersion.minSdkVersion
-        targetSdkVersion rootProject.ext.hiCoreVersion.targetSdkVersion
+        minSdkVersion hiCoreVersion.minSdkVersion
+        targetSdkVersion hiCoreVersion.targetSdkVersion
         versionCode gitVersionCode
         versionName gitVersionName
     }
@@ -65,34 +123,27 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     //Rest client
-    compile "com.google.code.gson:gson:${rootProject.ext.hiCoreVersion.gson}"
-    compile "com.squareup.okhttp3:okhttp:${rootProject.ext.hiCoreVersion.okhttp}"
-    compile "com.squareup.retrofit2:retrofit:${rootProject.ext.hiCoreVersion.retrofit}"
-    compile "com.squareup.retrofit2:converter-gson:${rootProject.ext.hiCoreVersion.retrofitConverterGson}"
-    compile "com.squareup.retrofit2:adapter-rxjava:${rootProject.ext.hiCoreVersion.retrofitAdapterRxjava}"
-
+    compile "com.google.code.gson:gson:${hiCoreVersion.gson}"
+    compile "com.squareup.okhttp3:okhttp:${hiCoreVersion.okhttp}"
+    compile "com.squareup.retrofit2:retrofit:${hiCoreVersion.retrofit}"
+    compile "com.squareup.retrofit2:converter-gson:${hiCoreVersion.retrofitConverterGson}"
+    compile "com.squareup.retrofit2:adapter-rxjava:${hiCoreVersion.retrofitAdapterRxjava}"
     //Async
-    compile "io.reactivex:rxandroid:${rootProject.ext.hiCoreVersion.rxAndroid}"
-    compile "io.reactivex:rxjava:${rootProject.ext.hiCoreVersion.rxJava}"
-
+    compile "io.reactivex:rxandroid:${hiCoreVersion.rxAndroid}"
+    compile "io.reactivex:rxjava:${hiCoreVersion.rxJava}"
     //Dagger
-    apt "com.google.dagger:dagger-compiler:${rootProject.ext.hiCoreVersion.daggerCompiler}"
-    compile "com.google.dagger:dagger:${rootProject.ext.hiCoreVersion.dagger}"
-    provided "javax.annotation:jsr250-api:${rootProject.ext.hiCoreVersion.jsr250Api}"
-
+    apt "com.google.dagger:dagger-compiler:${hiCoreVersion.daggerCompiler}"
+    compile "com.google.dagger:dagger:${hiCoreVersion.dagger}"
+    provided "javax.annotation:jsr250-api:${hiCoreVersion.jsr250Api}"
     //Date times
-    compile "net.danlew:android.joda:${rootProject.ext.hiCoreVersion.joda}"
-
+    compile "net.danlew:android.joda:${hiCoreVersion.joda}"
     //Logs
-    compile "com.github.LogentriesCommunity:le_android:${rootProject.ext.hiCoreVersion.logentries}"
-
+    compile "com.github.LogentriesCommunity:le_android:${hiCoreVersion.logentries}"
     //Pref storage
-    compile "com.github.orhanobut:hawk:${rootProject.ext.hiCoreVersion.hawk}"
-
+    compile "com.github.orhanobut:hawk:${hiCoreVersion.hawk}"
     //Cicerone
-    compile "ru.terrakok.cicerone:cicerone:${rootProject.ext.hiCoreVersion.cicerone}"
-
+    compile "ru.terrakok.cicerone:cicerone:${hiCoreVersion.cicerone}"
     //Messages
-    compile "org.greenrobot:eventbus:${rootProject.ext.hiCoreVersion.eventbus}"
+    compile "org.greenrobot:eventbus:${hiCoreVersion.eventbus}"
 
 }
