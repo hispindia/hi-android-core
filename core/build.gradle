@@ -7,7 +7,6 @@ buildscript {
         classpath "com.android.tools.build:gradle:${rootProject.ext.hiCoreVersion.buildGradle}"
         classpath "com.neenbedankt.gradle.plugins:android-apt:${rootProject.ext.hiCoreVersion.androidApt}"
         classpath "me.tatarka:gradle-retrolambda:${rootProject.ext.hiCoreVersion.retrolambda}"
-        classpath "io.realm:realm-gradle-plugin:${rootProject.ext.hiCoreVersion.realm}"
         classpath "org.ajoberstar:grgit:${rootProject.ext.hiCoreVersion.grgit}"
     }
 }
@@ -23,9 +22,6 @@ ext {
 apply plugin: 'com.android.library'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'android-apt'
-apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'realm-android'
-repositories { maven { url 'https://jitpack.io' } }
 
 android {
     compileSdkVersion rootProject.ext.hiCoreVersion.compileSdkVersion

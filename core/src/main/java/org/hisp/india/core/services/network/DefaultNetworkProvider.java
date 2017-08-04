@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import io.realm.RealmObject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -54,19 +53,7 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
 
     @Override
     public Gson gson() {
-        return createBuilder()
-                .setExclusionStrategies(new ExclusionStrategy() {
-                    @Override
-                    public boolean shouldSkipField(FieldAttributes f) {
-                        return f.getDeclaringClass().equals(RealmObject.class);
-                    }
-
-                    @Override
-                    public boolean shouldSkipClass(Class<?> clazz) {
-                        return false;
-                    }
-                })
-                .create();
+        return createBuilder().create();
     }
 
     @Override
@@ -74,6 +61,22 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
         return isDebug;
     }
 
+    /**
+     <pre>
+     Setting for Realm
+        .setExclusionStrategies(new ExclusionStrategy() {
+            @Override
+            public boolean shouldSkipField(FieldAttributes f) {
+                return f.getDeclaringClass().equals(RealmObject.class);
+            }
+
+            @Override
+            public boolean shouldSkipClass(Class<?> clazz) {
+                return false;
+            }
+        })
+     </pre>
+     */
     @Override
     public GsonBuilder createBuilder() {
         GsonBuilder gsonBuilder = new GsonBuilder();
