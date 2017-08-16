@@ -113,12 +113,12 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
     }
 
     @Override
-    public <T> T provideApi(String baseUrl, Class<T> service) {
-        return provideApi(baseUrl, service, false);
+    public <T> T provideApi(String baseUrl, Class<T> apiClass) {
+        return provideApi(baseUrl, apiClass, false);
     }
 
     @Override
-    public <T> T provideApi(String baseUrl, Class<T> service, boolean enableProgress) {
+    public <T> T provideApi(String baseUrl, Class<T> apiClass, boolean enableProgress) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         //Set timeout
@@ -153,7 +153,7 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
                 return originalResponse.newBuilder()
                                        .body(new ProgressResponseBody(originalResponse.body(),
                                                                       (bytesRead, contentLength, done) -> {
-                                                                          PROGRESS_BUS.post(new ProgressBus(service,
+                                                                          PROGRESS_BUS.post(new ProgressBus(apiClass,
                                                                                                             bytesRead,
                                                                                                             contentLength,
                                                                                                             done));
@@ -172,11 +172,16 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
                 .client(okHttpClient)
                 .build();
 
-        return restAdapter.create(service);
+        return restAdapter.create(apiClass);
     }
 
     @Override
     public <TResponse> Observable<TResponse> transformResponse(Observable<TResponse> call) {
+        return transformResponse(call, true);
+    }
+
+    @Override
+    public <TResponse> Observable<TResponse> transformResponse(Observable<TResponse> call, boolean enableFilter) {
 
         Observable<TResponse> res = call
                 .observeOn(Schedulers.computation())
@@ -184,7 +189,7 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
                 .onErrorResumeNext(throwable -> new ApiExceptionFilter<TResponse>().execute(throwable))
                 .flatMap(Observable::just);
 
-        if (enableFilter) {
+        if (this.enableFilter && enableFilter) {
             res = filterChain.execute(res);
         }
         return res.onExceptionResumeNext(Observable.empty());

@@ -36,10 +36,12 @@ public interface NetworkProvider {
 
     int getTimeout();
 
-    <T> T provideApi(String baseUrl, Class<T> service);
+    <T> T provideApi(String baseUrl, Class<T> apiClass);
 
-    <T> T provideApi(String baseUrl, Class<T> service, boolean enableProgress);
+    <T> T provideApi(String baseUrl, Class<T> apiClass, boolean enableProgress);
 
     <TResponse> Observable<TResponse> transformResponse(Observable<TResponse> call);
+
+    <TResponse> Observable<TResponse> transformResponse(Observable<TResponse> call, boolean enableFilter);
 
 }

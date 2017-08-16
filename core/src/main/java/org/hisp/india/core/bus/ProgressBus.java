@@ -5,20 +5,20 @@ package org.hisp.india.core.bus;
  */
 
 public class ProgressBus {
-    private Class service;
+    private Class apiClass;
     private long bytesRead;
     private long contentLength;
     private boolean done;
 
-    public ProgressBus(Class service, long bytesRead, long contentLength, boolean done) {
-        this.service = service;
+    public ProgressBus(Class apiClass, long bytesRead, long contentLength, boolean done) {
+        this.apiClass = apiClass;
         this.bytesRead = bytesRead;
         this.contentLength = contentLength;
         this.done = done;
     }
 
-    public Class getService() {
-        return service;
+    public Class getApiClass() {
+        return apiClass;
     }
 
     public long getBytesRead() {
