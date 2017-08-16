@@ -32,13 +32,13 @@ public interface NetworkProvider {
 
     NetworkProvider enableFilter(boolean enableFilter);
 
-    NetworkProvider enableProgress(boolean enableProgress);
-
     HttpLoggingInterceptor.Level getLevel();
 
     int getTimeout();
 
-    <T> T provideApi(String baseUrl, final Class<T> service);
+    <T> T provideApi(String baseUrl, Class<T> service);
+
+    <T> T provideApi(String baseUrl, Class<T> service, boolean enableProgress);
 
     <TResponse> Observable<TResponse> transformResponse(Observable<TResponse> call);
 

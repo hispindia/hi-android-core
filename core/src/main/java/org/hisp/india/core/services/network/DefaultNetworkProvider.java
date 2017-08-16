@@ -2,8 +2,6 @@ package org.hisp.india.core.services.network;
 
 import android.content.Context;
 
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -42,7 +40,6 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
     private Map<String, String> headers;
     private FilterChain filterChain;
     private boolean enableFilter;
-    private ProgressListener progressListener;
 
     public DefaultNetworkProvider(Context context, boolean isDebug) {
         super(context);
@@ -62,20 +59,20 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
     }
 
     /**
-     <pre>
-     Setting for Realm
-        .setExclusionStrategies(new ExclusionStrategy() {
-            @Override
-            public boolean shouldSkipField(FieldAttributes f) {
-                return f.getDeclaringClass().equals(RealmObject.class);
-            }
-
-            @Override
-            public boolean shouldSkipClass(Class<?> clazz) {
-                return false;
-            }
-        })
-     </pre>
+     * <pre>
+     * Setting for Realm
+     * .setExclusionStrategies(new ExclusionStrategy() {
+     * @Override
+     * public boolean shouldSkipField(FieldAttributes f) {
+     * return f.getDeclaringClass().equals(RealmObject.class);
+     * }
+     *
+     * @Override
+     * public boolean shouldSkipClass(Class<?> clazz) {
+     * return false;
+     * }
+     * })
+     * </pre>
      */
     @Override
     public GsonBuilder createBuilder() {
@@ -116,19 +113,12 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
     }
 
     @Override
-    public NetworkProvider enableProgress(boolean enableProgress) {
-        if (enableProgress) {
-            this.progressListener = (bytesRead, contentLength, done) -> {
-                PROGRESS_BUS.post(new ProgressBus(bytesRead, contentLength, done));
-            };
-        } else {
-            this.progressListener = null;
-        }
-        return this;
+    public <T> T provideApi(String baseUrl, Class<T> service) {
+        return provideApi(baseUrl, service, false);
     }
 
     @Override
-    public <T> T provideApi(String baseUrl, Class<T> service) {
+    public <T> T provideApi(String baseUrl, Class<T> service, boolean enableProgress) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         //Set timeout
@@ -156,12 +146,18 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
             builder.addInterceptor(interceptor);
         }
 
-        //Update progress
-        if (progressListener != null) {
+        //Add progress
+        if (enableProgress) {
             builder.addNetworkInterceptor(chain -> {
                 Response originalResponse = chain.proceed(chain.request());
                 return originalResponse.newBuilder()
-                                       .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+                                       .body(new ProgressResponseBody(originalResponse.body(),
+                                                                      (bytesRead, contentLength, done) -> {
+                                                                          PROGRESS_BUS.post(new ProgressBus(service,
+                                                                                                            bytesRead,
+                                                                                                            contentLength,
+                                                                                                            done));
+                                                                      }))
                                        .build();
 
             });
