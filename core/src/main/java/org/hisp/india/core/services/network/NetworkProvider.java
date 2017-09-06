@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.gson.GsonBuilder;
 
+import org.hisp.india.core.services.filter.Filter;
 import org.hisp.india.core.services.filter.InterceptFilter;
 
 import rx.Observable;
@@ -44,4 +45,7 @@ public interface NetworkProvider {
 
     <TResponse> Observable<TResponse> transformResponse(Observable<TResponse> call, boolean enableFilter);
 
+    <TResponse> Filter<TResponse, Observable<TResponse>> getRootFilter();
+
+    <TResponse> Filter<TResponse, Observable<TResponse>> getCommonFilter();
 }

@@ -10,6 +10,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.hisp.india.core.bus.ProgressBus;
 import org.hisp.india.core.common.JodaDateTimeDeserializer;
 import org.hisp.india.core.services.filter.ApiExceptionFilter;
+import org.hisp.india.core.services.filter.Filter;
 import org.hisp.india.core.services.filter.FilterChain;
 import org.hisp.india.core.services.filter.InterceptFilter;
 import org.hisp.india.core.services.filter.NetworkFilter;
@@ -151,14 +152,11 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
             builder.addNetworkInterceptor(chain -> {
                 Response originalResponse = chain.proceed(chain.request());
                 return originalResponse.newBuilder()
-                                       .body(new ProgressResponseBody(originalResponse.body(),
-                                                                      (bytesRead, contentLength, done) -> {
-                                                                          PROGRESS_BUS.post(new ProgressBus(apiClass,
-                                                                                                            bytesRead,
-                                                                                                            contentLength,
-                                                                                                            done));
-                                                                      }))
-                                       .build();
+                        .body(new ProgressResponseBody(originalResponse.body(),
+                                (bytesRead, contentLength, done) -> {
+                                    PROGRESS_BUS.post(new ProgressBus(apiClass, bytesRead, contentLength, done));
+                                }))
+                        .build();
 
             });
         }
@@ -183,11 +181,22 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
     @Override
     public <TResponse> Observable<TResponse> transformResponse(Observable<TResponse> call, boolean enableFilter) {
 
-        Observable<TResponse> res = call
-                .observeOn(Schedulers.computation())
+        Observable<TResponse> res = call.observeOn(Schedulers.computation());
+        //Filter with data original
+        Filter<TResponse, Observable<TResponse>> rootFilter = getRootFilter();
+        if (rootFilter != null) {
+            res = res.flatMap(rootFilter::execute);
+        }
+        //Parse error filter
+        res = res
                 .onErrorResumeNext(throwable -> new NetworkFilter<TResponse>(this).execute(throwable))
-                .onErrorResumeNext(throwable -> new ApiExceptionFilter<TResponse>().execute(throwable))
-                .flatMap(Observable::just);
+                .onErrorResumeNext(throwable -> new ApiExceptionFilter<TResponse>().execute(throwable));
+        //Filter with data after error filter
+        Filter<TResponse, Observable<TResponse>> commonFilter = getCommonFilter();
+        if (commonFilter != null) {
+            res = res.flatMap(commonFilter::execute);
+        }
+        res = res.flatMap(Observable::just);
 
         if (this.enableFilter && enableFilter) {
             res = filterChain.execute(res);
