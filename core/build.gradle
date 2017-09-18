@@ -31,29 +31,29 @@ buildscript {
             props = props.properties;
             if (props.containsKey("hiCoreVersion")) {
                 props = props.getAt("hiCoreVersion")
-                if (props.getAt("buildGradle") != null) hiCoreVersion.buildGradle = props.getAt("buildGradle")
-                if (props.getAt("androidApt") != null) hiCoreVersion.androidApt = props.getAt("androidApt")
-                if (props.getAt("retrolambda") != null) hiCoreVersion.retrolambda = props.getAt("retrolambda")
-                if (props.getAt("grgit") != null) hiCoreVersion.grgit = props.getAt("grgit")
-                if (props.getAt("compileSdkVersion") != null) hiCoreVersion.compileSdkVersion = props.getAt("compileSdkVersion")
-                if (props.getAt("buildToolsVersion") != null) hiCoreVersion.buildToolsVersion = props.getAt("buildToolsVersion")
-                if (props.getAt("minSdkVersion") != null) hiCoreVersion.minSdkVersion = props.getAt("minSdkVersion")
-                if (props.getAt("targetSdkVersion") != null) hiCoreVersion.targetSdkVersion = props.getAt("targetSdkVersion")
-                if (props.getAt("gson") != null) hiCoreVersion.gson = props.getAt("gson")
-                if (props.getAt("okhttp") != null) hiCoreVersion.okhttp = props.getAt("okhttp")
-                if (props.getAt("retrofit") != null) hiCoreVersion.retrofit = props.getAt("retrofit")
-                if (props.getAt("retrofitConverterGson") != null) hiCoreVersion.retrofitConverterGson = props.getAt("retrofitConverterGson")
-                if (props.getAt("retrofitAdapterRxjava") != null) hiCoreVersion.retrofitAdapterRxjava = props.getAt("retrofitAdapterRxjava")
-                if (props.getAt("rxAndroid") != null) hiCoreVersion.rxAndroid = props.getAt("rxAndroid")
-                if (props.getAt("rxJava") != null) hiCoreVersion.rxJava = props.getAt("rxJava")
-                if (props.getAt("dagger") != null) hiCoreVersion.dagger = props.getAt("dagger")
-                if (props.getAt("daggerCompiler") != null) hiCoreVersion.daggerCompiler = props.getAt("daggerCompiler")
-                if (props.getAt("jsr250Api") != null) hiCoreVersion.jsr250Api = props.getAt("jsr250Api")
-                if (props.getAt("joda") != null) hiCoreVersion.joda = props.getAt("joda")
-                if (props.getAt("hawk") != null) hiCoreVersion.hawk = props.getAt("hawk")
-                if (props.getAt("cicerone") != null) hiCoreVersion.cicerone = props.getAt("cicerone")
-                if (props.getAt("logentries") != null) hiCoreVersion.logentries = props.getAt("logentries")
-                if (props.getAt("eventbus") != null) hiCoreVersion.eventbus = props.getAt("eventbus")
+                if (props["buildGradle"] != null) hiCoreVersion.buildGradle = props["buildGradle"]
+                if (props["androidApt"] != null) hiCoreVersion.androidApt = props["androidApt"]
+                if (props["retrolambda"] != null) hiCoreVersion.retrolambda = props["retrolambda"]
+                if (props["grgit"] != null) hiCoreVersion.grgit = props["grgit"]
+                if (props["compileSdkVersion"] != null) hiCoreVersion.compileSdkVersion = props["compileSdkVersion"]
+                if (props["buildToolsVersion"] != null) hiCoreVersion.buildToolsVersion = props["buildToolsVersion"]
+                if (props["minSdkVersion"] != null) hiCoreVersion.minSdkVersion = props["minSdkVersion"]
+                if (props["targetSdkVersion"] != null) hiCoreVersion.targetSdkVersion = props["targetSdkVersion"]
+                if (props["gson"] != null) hiCoreVersion.gson = props["gson"]
+                if (props["okhttp"] != null) hiCoreVersion.okhttp = props["okhttp"]
+                if (props["retrofit"] != null) hiCoreVersion.retrofit = props["retrofit"]
+                if (props["retrofitConverterGson"] != null) hiCoreVersion.retrofitConverterGson = props["retrofitConverterGson"]
+                if (props["retrofitAdapterRxjava"] != null) hiCoreVersion.retrofitAdapterRxjava = props["retrofitAdapterRxjava"]
+                if (props["rxAndroid"] != null) hiCoreVersion.rxAndroid = props["rxAndroid"]
+                if (props["rxJava"] != null) hiCoreVersion.rxJava = props["rxJava"]
+                if (props["dagger"] != null) hiCoreVersion.dagger = props["dagger"]
+                if (props["daggerCompiler"] != null) hiCoreVersion.daggerCompiler = props["daggerCompiler"]
+                if (props["jsr250Api"] != null) hiCoreVersion.jsr250Api = props["jsr250Api"]
+                if (props["joda"] != null) hiCoreVersion.joda = props["joda"]
+                if (props["hawk"] != null) hiCoreVersion.hawk = props["hawk"]
+                if (props["cicerone"] != null) hiCoreVersion.cicerone = props["cicerone"]
+                if (props["logentries"] != null) hiCoreVersion.logentries = props["logentries"]
+                if (props["eventbus"] != null) hiCoreVersion.eventbus = props["eventbus"]
             }
         }
     }

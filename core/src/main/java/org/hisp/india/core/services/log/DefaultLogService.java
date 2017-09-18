@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public class DefaultLogService implements LogService {
 
-    private AndroidLogger logger;
+    protected AndroidLogger logger;
 
     @Override
     public void init(Context context,

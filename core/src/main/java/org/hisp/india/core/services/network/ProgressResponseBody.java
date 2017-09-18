@@ -16,9 +16,9 @@ import okio.Source;
 
 public class ProgressResponseBody extends ResponseBody {
 
-    private final ResponseBody responseBody;
-    private final ProgressListener progressListener;
-    private BufferedSource bufferedSource;
+    protected final ResponseBody responseBody;
+    protected final ProgressListener progressListener;
+    protected BufferedSource bufferedSource;
 
     public ProgressResponseBody(ResponseBody responseBody, ProgressListener progressListener) {
         this.responseBody = responseBody;

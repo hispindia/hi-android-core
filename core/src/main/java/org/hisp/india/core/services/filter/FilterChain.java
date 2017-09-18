@@ -11,7 +11,7 @@ import rx.Observable;
 
 public class FilterChain {
 
-    private List<InterceptFilter> filters = new ArrayList<>();
+    protected List<InterceptFilter> filters = new ArrayList<>();
 
     public <T> Observable<T> execute(Observable<T> target) {
         Observable<T> res = target;

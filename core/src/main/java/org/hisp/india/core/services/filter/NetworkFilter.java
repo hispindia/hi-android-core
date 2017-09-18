@@ -12,7 +12,7 @@ import rx.Observable;
 
 public class NetworkFilter<T> implements Filter<Throwable,Observable<T>> {
 
-    private NetworkProvider networkProvider;
+    protected NetworkProvider networkProvider;
 
     public NetworkFilter(NetworkProvider networkProvider) {
         this.networkProvider = networkProvider;
