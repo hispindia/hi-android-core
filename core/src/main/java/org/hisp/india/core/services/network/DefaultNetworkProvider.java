@@ -2,6 +2,10 @@ package org.hisp.india.core.services.network;
 
 import android.content.Context;
 
+import com.franmontiel.persistentcookiejar.ClearableCookieJar;
+import com.franmontiel.persistentcookiejar.PersistentCookieJar;
+import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
+import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -16,10 +20,13 @@ import org.hisp.india.core.services.filter.InterceptFilter;
 import org.hisp.india.core.services.filter.NetworkFilter;
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -39,13 +46,18 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
 
     private boolean isDebug;
     private Map<String, String> headers;
+    private List<Interceptor> interceptorList;
+    private List<Interceptor> networkInterceptorList;
     private FilterChain filterChain;
     private boolean enableFilter;
+    private boolean enableCookie;
 
     public DefaultNetworkProvider(Context context, boolean isDebug) {
         super(context);
         this.isDebug = isDebug;
         this.headers = new HashMap<>();
+        this.interceptorList = new ArrayList<>();
+        this.networkInterceptorList = new ArrayList<>();
         this.filterChain = new FilterChain();
     }
 
@@ -114,6 +126,24 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
     }
 
     @Override
+    public NetworkProvider enableCookie(boolean enableCookie) {
+        this.enableCookie = enableCookie;
+        return this;
+    }
+
+    @Override
+    public NetworkProvider addInterceptor(Interceptor interceptor) {
+        interceptorList.add(interceptor);
+        return this;
+    }
+
+    @Override
+    public NetworkProvider addNetworkInterceptor(Interceptor interceptor) {
+        networkInterceptorList.add(interceptor);
+        return this;
+    }
+
+    @Override
     public <T> T provideApi(String baseUrl, Class<T> apiClass) {
         return provideApi(baseUrl, apiClass, false);
     }
@@ -160,6 +190,17 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
 
             });
         }
+
+        //Enable cookie
+        if(enableCookie) {
+            ClearableCookieJar cookieJar =
+                    new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(context));
+            builder.cookieJar(cookieJar);
+        }
+
+        //Provide interceptors
+        interceptorList.forEach(builder::addInterceptor);
+        networkInterceptorList.forEach(builder::addInterceptor);
 
         OkHttpClient okHttpClient = builder.build();
 

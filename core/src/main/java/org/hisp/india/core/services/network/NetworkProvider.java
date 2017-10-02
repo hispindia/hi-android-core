@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import org.hisp.india.core.services.filter.Filter;
 import org.hisp.india.core.services.filter.InterceptFilter;
 
+import okhttp3.Interceptor;
 import rx.Observable;
 
 /**
@@ -32,6 +33,12 @@ public interface NetworkProvider {
     NetworkProvider clearFilter();
 
     NetworkProvider enableFilter(boolean enableFilter);
+
+    NetworkProvider enableCookie(boolean enableCookie);
+
+    NetworkProvider addInterceptor(Interceptor interceptor);
+
+    NetworkProvider addNetworkInterceptor(Interceptor interceptor);
 
     HttpLoggingInterceptor.Level getLevel();
 

@@ -24,7 +24,9 @@ buildscript {
                 hawk                 : "1.23",
                 cicerone             : "1.2.1",
                 logentries           : "logentries-android-4.4.1",
-                eventbus             : "3.0.0"
+                eventbus             : "3.0.0",
+                cookie               : "v1.0.1"
+
         ]
         def props = rootProject.getExtensions().findByName("ext");
         if (props != null) {
@@ -54,12 +56,14 @@ buildscript {
                 if (props["cicerone"] != null) hiCoreVersion.cicerone = props["cicerone"]
                 if (props["logentries"] != null) hiCoreVersion.logentries = props["logentries"]
                 if (props["eventbus"] != null) hiCoreVersion.eventbus = props["eventbus"]
+                if (props["cookie"] != null) hiCoreVersion.cookie = props["cookie"]
             }
         }
     }
     repositories {
         jcenter()
         mavenCentral()
+        maven { url "https://jitpack.io" }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${hiCoreVersion.buildGradle}"
@@ -145,5 +149,7 @@ dependencies {
     compile "ru.terrakok.cicerone:cicerone:${hiCoreVersion.cicerone}"
     //Messages
     compile "org.greenrobot:eventbus:${hiCoreVersion.eventbus}"
+    //Cookie
+    compile "com.github.franmontiel:PersistentCookieJar:${hiCoreVersion.cookie}"
 
 }
