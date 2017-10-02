@@ -199,8 +199,12 @@ public class DefaultNetworkProvider extends AbstractNetworkProvider implements N
         }
 
         //Provide interceptors
-        interceptorList.forEach(builder::addInterceptor);
-        networkInterceptorList.forEach(builder::addInterceptor);
+        for (Interceptor interceptor : interceptorList) {
+            builder.addInterceptor(interceptor);
+        }
+        for (Interceptor interceptor : networkInterceptorList) {
+            builder.addNetworkInterceptor(interceptor);
+        }
 
         OkHttpClient okHttpClient = builder.build();
 
